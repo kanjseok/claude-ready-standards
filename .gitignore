@@ -1,16 +1,23 @@
-# OS
+# OS generated files
 .DS_Store
 Thumbs.db
 Desktop.ini
+ehthumbs.db
 
-# 에디터
+# Editor / IDE
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
 
-# 임시
+# AI tools
+.claude/
+
+# Temporary files
 *.tmp
 *.bak
 *.log
+
+# Task management (local only)
+tasks/
