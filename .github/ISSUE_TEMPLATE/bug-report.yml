@@ -1,0 +1,48 @@
+name: Bug Report
+description: Report broken links, incorrect information, or formatting issues in the standards documents.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting an issue! Please fill out the sections below to help us understand the problem.
+
+  - type: input
+    id: document
+    attributes:
+      label: Affected Document
+      description: Which document contains the issue?
+      placeholder: "e.g., boilerplate-guide/03-backend-nestjs.md"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: type
+    attributes:
+      label: Issue Type
+      options:
+        - Incorrect information
+        - Broken link
+        - Formatting / rendering issue
+        - Outdated version reference
+        - Typo or grammar error
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe the issue clearly. Include line numbers or section headings if possible.
+      placeholder: "Section 3.2 references Node.js v22, but TECH-STACK.md specifies v24."
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected Correction
+      description: What should the correct content be?
+    validations:
+      required: false

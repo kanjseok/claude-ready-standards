@@ -1,0 +1,64 @@
+name: Document Request
+description: Propose a new standard document or a new section for an existing document.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have an idea for a new standard document or improvement? We'd love to hear it!
+
+  - type: dropdown
+    id: request-type
+    attributes:
+      label: Request Type
+      options:
+        - New document in existing category
+        - New standard category
+        - Major addition to existing document
+    validations:
+      required: true
+
+  - type: input
+    id: title
+    attributes:
+      label: Proposed Title
+      description: What would you name the document or section?
+      placeholder: "e.g., API Design Standards, Observability Guide"
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation
+      description: Why is this document needed? What problem does it solve?
+    validations:
+      required: true
+
+  - type: textarea
+    id: outline
+    attributes:
+      label: Proposed Outline
+      description: A rough outline of the sections you envision (optional but helpful).
+      placeholder: |
+        ## 1. Overview
+        ## 2. REST API Conventions
+        ## 3. Error Response Patterns
+        ## 4. Versioning Strategy
+        ## Verification
+    validations:
+      required: false
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: Target Category
+      description: Where should this document live?
+      options:
+        - boilerplate-guide/
+        - api-design/ (new)
+        - deployment/ (new)
+        - observability/ (new)
+        - Other (describe above)
+    validations:
+      required: true
