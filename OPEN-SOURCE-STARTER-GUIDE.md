@@ -92,7 +92,7 @@ Community health files are essential for encouraging contributions and maintaini
 >
 > 1. **Before You Start** — search existing issues, open issues for non-trivial changes, link to Code of Conduct
 > 2. **How to Contribute** — fork & branch workflow with commands, branch naming conventions (`feature/`, `fix/`, `chore/`)
-> 3. **Commit Message Convention** — Conventional Commits format with `{type}` as the default type, list of scopes, and examples of correct/incorrect messages
+> 3. **Commit Message Convention** — Conventional Commits format with `{type}` as the default type (e.g., `feat` for software, `docs` for documentation), list of scopes, and examples of correct/incorrect messages
 > 4. **Code/Document Writing Conventions** — `{project-specific-rules}`
 > 5. **Pull Request Guidelines** — fill template, reference issues, keep PRs focused, cross-reference consistency
 > 6. **Reporting Issues** — link to issue templates
@@ -481,22 +481,22 @@ Run these commands to verify the bootstrapped repository:
 
 ```bash
 # Verify all essential files exist
-for f in LICENSE CODE_OF_CONDUCT.md CONTRIBUTING.md SECURITY.md README.md CLAUDE.md .gitignore .gitattributes; do test -f "$f" || { echo "❌ Missing essential file: $f"; exit 1; }; done
+for f in LICENSE CODE_OF_CONDUCT.md CONTRIBUTING.md SECURITY.md README.md CLAUDE.md .gitignore .gitattributes; do test -f "$f" || { echo "❌ Missing essential file: $f" >&2; exit 1; }; done
 
 # Verify GitHub templates exist
-for f in .github/PULL_REQUEST_TEMPLATE.md .github/ISSUE_TEMPLATE/bug-report.yml .github/ISSUE_TEMPLATE/feature-request.yml; do test -f "$f" || { echo "❌ Missing GitHub template: $f"; exit 1; }; done
+for f in .github/PULL_REQUEST_TEMPLATE.md .github/ISSUE_TEMPLATE/bug-report.yml .github/ISSUE_TEMPLATE/feature-request.yml; do test -f "$f" || { echo "❌ Missing GitHub template: $f" >&2; exit 1; }; done
 
 # Verify .gitignore covers essentials
 for pattern in '\.env' '\.DS_Store' '\.claude/' 'tasks/'; do
-  grep -qE "^\s*${pattern}" .gitignore || { echo "❌ .gitignore is missing essential pattern: ${pattern//\\/}"; exit 1; }
+  grep -qE "^\s*${pattern}" .gitignore || { echo "❌ .gitignore is missing essential pattern: ${pattern//\\/}" >&2; exit 1; }
 done
 
 # Verify .gitattributes enforces LF
-grep -qE '^\s*\*.*eol=lf' .gitattributes || { echo "❌ .gitattributes is not enforcing LF line endings"; exit 1; }
+grep -qE '^\s*\*.*eol=lf' .gitattributes || { echo "❌ .gitattributes is not enforcing LF line endings" >&2; exit 1; }
 
 # Verify git rules in CLAUDE.md
 for cmd in "git add -A" "git add ." "git push --force" "git reset --hard"; do
-  grep -qF "$cmd" CLAUDE.md || { echo "❌ CLAUDE.md is missing documentation for prohibited git command: '$cmd'"; exit 1; }
+  grep -qF "$cmd" CLAUDE.md || { echo "❌ CLAUDE.md is missing documentation for prohibited git command: '$cmd'" >&2; exit 1; }
 done
 
 # Verify clean git status
