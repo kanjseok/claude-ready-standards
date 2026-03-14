@@ -252,7 +252,8 @@ For larger projects, supplement `CLAUDE.md` with granular rule files:
 >
 > ## Guidelines
 > 1. ...
-> ```"
+> ```
+> "
 
 ---
 
