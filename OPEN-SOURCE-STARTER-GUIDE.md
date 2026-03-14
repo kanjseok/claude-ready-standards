@@ -78,7 +78,7 @@ Choose the appropriate license based on your project type:
 
 Community health files are essential for encouraging contributions and maintaining project quality.
 
-> **File Placement Note:** GitHub recognizes community health files (`CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `SECURITY.md`) in three locations: the repository root, `docs/`, or `.github/`. This guide places them in the **root directory** for maximum visibility — contributors see them immediately without navigating into subdirectories. If you prefer a cleaner root, move them to `.github/` by updating the file paths in the generation prompts (Section 3) and the verification script (Section 10).
+> **File Placement Note:** GitHub recognizes community health files (`CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `SECURITY.md`) in three locations: the repository root, `docs/`, or `.github/`. This guide places them in the **root directory** for maximum visibility — contributors see them immediately without navigating into subdirectories. If you prefer a cleaner root, move them to `.github/` or `docs/` by updating the file paths in the generation prompts (Section 3) and the verification script (Section 10).
 
 ### 3.1 Code of Conduct
 
@@ -487,9 +487,9 @@ for f in LICENSE README.md CLAUDE.md .gitignore .gitattributes; do
   test -f "$f" || { echo "❌ Missing essential file: $f" >&2; exit 1; }
 done
 
-# Verify community health files exist (in root or .github/)
+# Verify community health files exist (in root, .github/, or docs/)
 for f in CODE_OF_CONDUCT.md CONTRIBUTING.md SECURITY.md; do
-  test -f "$f" || test -f ".github/$f" || { echo "❌ Missing community health file: $f" >&2; exit 1; }
+  test -f "$f" || test -f ".github/$f" || test -f "docs/$f" || { echo "❌ Missing community health file: $f" >&2; exit 1; }
 done
 
 # Verify GitHub templates exist
