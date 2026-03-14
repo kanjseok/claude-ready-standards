@@ -57,7 +57,7 @@ If you use other AI coding tools:
 | ------------------------------------------------------------------ | --------------------------------------------------------- |
 | [`TECH-STACK.md`](./TECH-STACK.md)                                 | Baseline for tech stack versions (Single Source of Truth) |
 | [`CLAUDE.md`](./CLAUDE.md)                                         | Rules for working with Claude Code within this repository |
-| [`OPEN-SOURCE-STARTER-GUIDE.md`](./OPEN-SOURCE-STARTER-GUIDE.md) | Guide to bootstrap a new open source project with Claude Code |
+| [`OPEN-SOURCE-STARTER-GUIDE.md`](./OPEN-SOURCE-STARTER-GUIDE.md) | Guide to bootstrap new OSS projects with Claude Code         |
 | [`boilerplate-guide/00-index.md`](./boilerplate-guide/00-index.md) | Index for the Boilerplate Guide                           |
 
 ---

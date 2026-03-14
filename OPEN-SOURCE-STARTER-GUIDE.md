@@ -124,7 +124,7 @@ Community health files are essential for encouraging contributions and maintaini
 > "Create GitHub issue templates under `.github/ISSUE_TEMPLATE/`:
 >
 > **`bug-report.yml`:**
-> - Fields: Affected area (input, required), Issue type (dropdown: incorrect behavior, crash, performance, security, other), Description (textarea, required), Steps to reproduce (textarea, required), Expected behavior (textarea), Environment info (textarea: OS, language version, project version)
+> - Fields: Affected area (input, required), Issue type (dropdown with options: 'incorrect behavior', 'crash', 'performance', 'security', 'other'), Description (textarea, required), Steps to reproduce (textarea, required), Expected behavior (textarea), Environment info (textarea: OS, language version, project version)
 >
 > **`feature-request.yml`:**
 > - Fields: Feature title (input, required), Motivation/problem (textarea, required), Proposed solution (textarea, required), Alternatives considered (textarea), Additional context (textarea)

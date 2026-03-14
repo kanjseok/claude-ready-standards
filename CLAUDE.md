@@ -31,7 +31,7 @@ claude-ready-standards/
 ├── CONTRIBUTING.md      # Contribution guidelines
 ├── README.md            # Repository entry point — Overview, catalog, writing principles
 ├── CLAUDE.md            # This file — Repository-specific Claude Code rules
-├── OPEN-SOURCE-STARTER-GUIDE.md # Guide to bootstrap new open source projects with Claude Code
+├── OPEN-SOURCE-STARTER-GUIDE.md  # Guide to bootstrap new open source projects with Claude Code
 ├── TECH-STACK.md        # Tech stack version reference (Single Source of Truth)
 └── boilerplate-guide/   # Boilerplate tech guides (19 documents)
     ├── 00-index.md      # Guide index + Tech stack summary
