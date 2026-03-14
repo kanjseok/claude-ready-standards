@@ -482,8 +482,15 @@ After pushing to GitHub, configure these settings in the repository:
 Run these commands to verify the bootstrapped repository:
 
 ```bash
-# Verify all essential files exist
-for f in LICENSE CODE_OF_CONDUCT.md CONTRIBUTING.md SECURITY.md README.md CLAUDE.md .gitignore .gitattributes; do test -f "$f" || { echo "❌ Missing essential file: $f" >&2; exit 1; }; done
+# Verify essential root files exist
+for f in LICENSE README.md CLAUDE.md .gitignore .gitattributes; do
+  test -f "$f" || { echo "❌ Missing essential file: $f" >&2; exit 1; }
+done
+
+# Verify community health files exist (in root or .github/)
+for f in CODE_OF_CONDUCT.md CONTRIBUTING.md SECURITY.md; do
+  test -f "$f" || test -f ".github/$f" || { echo "❌ Missing community health file: $f" >&2; exit 1; }
+done
 
 # Verify GitHub templates exist
 for f in .github/PULL_REQUEST_TEMPLATE.md .github/ISSUE_TEMPLATE/bug-report.yml .github/ISSUE_TEMPLATE/feature-request.yml; do test -f "$f" || { echo "❌ Missing GitHub template: $f" >&2; exit 1; }; done
