@@ -486,13 +486,13 @@ for f in LICENSE CODE_OF_CONDUCT.md CONTRIBUTING.md SECURITY.md README.md CLAUDE
 for f in .github/PULL_REQUEST_TEMPLATE.md .github/ISSUE_TEMPLATE/bug-report.yml .github/ISSUE_TEMPLATE/feature-request.yml; do test -f "$f" || { echo "❌ Missing GitHub template: $f"; exit 1; }; done
 
 # Verify .gitignore covers essentials
-grep -E "\.env|\.DS_Store|\.claude|tasks/" .gitignore
+grep -qE "\.env|\.DS_Store|\.claude|tasks/" .gitignore || { echo "❌ .gitignore is missing essential patterns"; exit 1; }
 
 # Verify .gitattributes enforces LF
-grep "eol=lf" .gitattributes
+grep -q "eol=lf" .gitattributes || { echo "❌ .gitattributes is not enforcing LF line endings"; exit 1; }
 
 # Verify git rules in CLAUDE.md
-grep -E "git add -A|git add \.|git push --force|git reset --hard" CLAUDE.md
+grep -qE "git add -A|git add \.|git push --force|git reset --hard" CLAUDE.md || { echo "❌ CLAUDE.md does not document prohibited git commands"; exit 1; }
 
 # Verify clean git status
 git status
