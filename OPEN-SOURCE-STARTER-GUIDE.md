@@ -496,7 +496,7 @@ grep -qE '^\s*\*.*eol=lf' .gitattributes || { echo "❌ .gitattributes is not en
 
 # Verify git rules in CLAUDE.md
 for cmd in "git add -A" "git add ." "git push --force" "git reset --hard"; do
-  grep -A 5 'Prohibited' CLAUDE.md | grep -qF "$cmd" || { echo "❌ CLAUDE.md is missing documentation for prohibited git command: '$cmd' in a 'Prohibited' section" >&2; exit 1; }
+  grep -A 5 'Prohibited Actions' CLAUDE.md | grep -qF "$cmd" || { echo "❌ CLAUDE.md is missing documentation for prohibited git command: '$cmd' in a 'Prohibited Actions' section" >&2; exit 1; }
 done
 
 # Verify clean git status
