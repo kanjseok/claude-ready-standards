@@ -459,7 +459,7 @@ After Claude Code generates the files, verify completeness:
 - [ ] All placeholder values (`{project-name}`, etc.) have been replaced
 - [ ] Commit message format in `CONTRIBUTING.md` matches `CLAUDE.md`
 - [ ] Git rules in `CLAUDE.md` prohibit `git add -A`, `git add .`, `git push --force`, and `git reset --hard`
-- [ ] `.gitignore` includes `.env` and `tasks/`
+- [ ] `.gitignore` includes `.env`, `.env.local`, `.env.*.local`, and `tasks/`
 - [ ] Branch naming conventions are documented
 - [ ] Contact information is consistent across `CODE_OF_CONDUCT.md` and `SECURITY.md`
 
@@ -487,7 +487,7 @@ for f in LICENSE CODE_OF_CONDUCT.md CONTRIBUTING.md SECURITY.md README.md CLAUDE
 for f in .github/PULL_REQUEST_TEMPLATE.md .github/ISSUE_TEMPLATE/bug-report.yml .github/ISSUE_TEMPLATE/feature-request.yml; do test -f "$f" || { echo "❌ Missing GitHub template: $f" >&2; exit 1; }; done
 
 # Verify .gitignore covers essentials
-for pattern in '\.env' '\.DS_Store' '\.claude/' 'tasks/'; do
+for pattern in '\.env' '\.env\.local' '\.env\..*\.local' '\.DS_Store' '\.claude/' 'tasks/'; do
   grep -qE "^\s*${pattern}" .gitignore || { echo "❌ .gitignore is missing essential pattern: ${pattern//\\/}" >&2; exit 1; }
 done
 
