@@ -129,7 +129,7 @@ Community health files are essential for encouraging contributions and maintaini
 > **`feature-request.yml`:**
 > - Fields: Feature title (input, required), Motivation/problem (textarea, required), Proposed solution (textarea, required), Alternatives considered (textarea), Additional context (textarea)
 >
-> Use YAML form syntax (not classic Markdown templates). Add appropriate labels to each template."
+> Use YAML form syntax (not classic Markdown templates). Add a `bug` label to `bug-report.yml` and an `enhancement` label to `feature-request.yml`."
 
 ### 4.2 Pull Request Template
 
@@ -228,7 +228,7 @@ git reset --hard        # Hard reset prohibited
 
 For larger projects, supplement `CLAUDE.md` with granular rule files:
 
-```
+```text
 .claude/
 └── rules/
     ├── api-endpoints.md      # Rules for writing API endpoints
@@ -248,7 +248,7 @@ For larger projects, supplement `CLAUDE.md` with granular rule files:
 > ```markdown
 > # {Domain} Rules
 > - **Target**: `{glob pattern}`
-> - **Keywords**: {comma-separated keywords}
+> - **Keywords**: keyword1, keyword2, keyword3
 >
 > ## Guidelines
 > 1. ...
@@ -491,7 +491,7 @@ grep -E "\.env|\.DS_Store|\.claude|tasks/" .gitignore
 grep "eol=lf" .gitattributes
 
 # Verify git rules in CLAUDE.md
-grep -E "git add -A|git add \.|force push|hard reset" CLAUDE.md
+grep -E "git add -A|git add \.|git push --force|git reset --hard" CLAUDE.md
 
 # Verify clean git status
 git status
