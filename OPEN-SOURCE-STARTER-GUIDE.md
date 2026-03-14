@@ -298,7 +298,7 @@ Creator and maintainer information.
 
 > **Prompt to Claude Code:**
 >
-> "Create a `README.md` for `{project-name}` with the structure above. The project is `{one-line-description}`. Fill in the Why section with: Problem — `{problem}`, Solution — `{solution}`, Scope — `{scope}`. Add placeholder sections for Quick Start, Documentation, Contributing, and License. Use `{license-type}` for the license section."
+> "Update the `README.md` for `{project-name}` with the structure above. The project is `{one-line-description}`. Fill in the Why section with: Problem — `{problem}`, Solution — `{solution}`, Scope — `{scope}`. Add placeholder sections for Quick Start, Documentation, Contributing, and License. Use `{license-type}` for the license section."
 
 ---
 
@@ -428,7 +428,7 @@ Use this single comprehensive prompt to generate all essential files in one sess
 > 11. `.github/PULL_REQUEST_TEMPLATE.md` — summary, related issue, changes, checklist
 >
 > After generating all files, run `git add` for each file individually and commit with the message:
-> `{default-type}(repo): initialize open source project structure`
+> `{type}(repo): initialize open source project structure`
 >
 > Do NOT use `git add -A` or `git add .`."
 
