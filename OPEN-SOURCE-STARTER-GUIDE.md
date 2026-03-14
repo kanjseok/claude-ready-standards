@@ -487,7 +487,7 @@ for f in LICENSE CODE_OF_CONDUCT.md CONTRIBUTING.md SECURITY.md README.md CLAUDE
 for f in .github/PULL_REQUEST_TEMPLATE.md .github/ISSUE_TEMPLATE/bug-report.yml .github/ISSUE_TEMPLATE/feature-request.yml; do test -f "$f" || { echo "❌ Missing GitHub template: $f"; exit 1; }; done
 
 # Verify .gitignore covers essentials
-for pattern in "\.env" "\.DS_Store" "\.claude/" "tasks/"; do
+for pattern in '\.env' '\.DS_Store' '\.claude/' 'tasks/'; do
   grep -q "^${pattern}$" .gitignore || { echo "❌ .gitignore is missing essential pattern: $pattern"; exit 1; }
 done
 
