@@ -92,7 +92,7 @@ Community health files are essential for encouraging contributions and maintaini
 >
 > 1. **Before You Start** — search existing issues, open issues for non-trivial changes, link to Code of Conduct
 > 2. **How to Contribute** — fork & branch workflow with commands, branch naming conventions (`feature/`, `fix/`, `chore/`)
-> 3. **Commit Message Convention** — Conventional Commits format with `{default-type}` as the default type, list of scopes, and examples of correct/incorrect messages
+> 3. **Commit Message Convention** — Conventional Commits format with `{type}` as the default type, list of scopes, and examples of correct/incorrect messages
 > 4. **Code/Document Writing Conventions** — `{project-specific-rules}`
 > 5. **Pull Request Guidelines** — fill template, reference issues, keep PRs focused, cross-reference consistency
 > 6. **Reporting Issues** — link to issue templates
@@ -488,7 +488,7 @@ for f in .github/PULL_REQUEST_TEMPLATE.md .github/ISSUE_TEMPLATE/bug-report.yml 
 
 # Verify .gitignore covers essentials
 for pattern in '\.env' '\.DS_Store' '\.claude/' 'tasks/'; do
-  grep -q "^${pattern}$" .gitignore || { echo "❌ .gitignore is missing essential pattern: $pattern"; exit 1; }
+  grep -q "^${pattern}" .gitignore || { echo "❌ .gitignore is missing essential pattern: $pattern"; exit 1; }
 done
 
 # Verify .gitattributes enforces LF
