@@ -185,7 +185,7 @@ The `CLAUDE.md` file is the most critical piece for ongoing Claude Code integrat
 > - Commit message format with examples
 > - Branch naming conventions
 >
-> **Section 4 — Work Workflow:**
+> **Section 4 — Workflow:**
 > - Plan Mode requirements (when to enter, when to re-plan)
 > - Subagent strategy (delegate research, single-task focus)
 > - Verification before completion (prove correctness, check consistency)
@@ -468,7 +468,7 @@ After Claude Code generates the files, verify completeness:
 After pushing to GitHub, configure these settings in the repository:
 
 - [ ] **General**: Set description and topics
-- [ ] **Branches**: Add branch protection rule for `main` (require PR, require reviews)
+- [ ] **Branches**: Add branch protection rule for `main` (require PR, require at least 1 review, require status checks to pass before merging)
 - [ ] **Pull Requests**: Enable "Allow squash merging" as default
 - [ ] **Security**: Enable Dependabot alerts and security advisories
 - [ ] **Pages** (optional): Enable GitHub Pages for documentation
