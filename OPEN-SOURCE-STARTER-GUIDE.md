@@ -78,7 +78,7 @@ Choose the appropriate license based on your project type:
 
 Community health files are essential for encouraging contributions and maintaining project quality.
 
-> **File Placement Note:** GitHub recognizes community health files (`CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `SECURITY.md`) in three locations: the repository root, `docs/`, or `.github/`. This guide places them in the **root directory** for maximum visibility — contributors see them immediately without navigating into subdirectories. If you prefer a cleaner root, move them to `.github/` and update the file paths in the generation prompts and verification script accordingly.
+> **File Placement Note:** GitHub recognizes community health files (`CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `SECURITY.md`) in three locations: the repository root, `docs/`, or `.github/`. This guide places them in the **root directory** for maximum visibility — contributors see them immediately without navigating into subdirectories. If you prefer a cleaner root, move them to `.github/` by updating the file paths in the generation prompts (Section 3) and the verification script (Section 10).
 
 ### 3.1 Code of Conduct
 
@@ -498,7 +498,7 @@ grep -qE '^\s*\*.*eol=lf' .gitattributes || { echo "❌ .gitattributes is not en
 
 # Verify git rules in CLAUDE.md
 for cmd in "git add -A" "git add ." "git push --force" "git reset --hard"; do
-  awk '/^### Prohibited Actions/{f=1;next} /^##+ /{f=0} f' CLAUDE.md | grep -qF "$cmd" || { echo "❌ CLAUDE.md is missing documentation for prohibited git command: '$cmd' in a 'Prohibited Actions' section" >&2; exit 1; }
+  awk '/^### Prohibited Actions/{f=1;next} /^##+ /{f=0} f' CLAUDE.md | grep -qF "$cmd" || { echo "❌ CLAUDE.md does not list the prohibited command '$cmd' under the '### Prohibited Actions' section" >&2; exit 1; }
 done
 
 # Verify clean git status
