@@ -31,6 +31,7 @@ claude-ready-standards/
 ├── CONTRIBUTING.md      # Contribution guidelines
 ├── README.md            # Repository entry point — Overview, catalog, writing principles
 ├── CLAUDE.md            # This file — Repository-specific Claude Code rules
+├── OPEN-SOURCE-STARTER-GUIDE.md  # Guide to bootstrap new open source projects with Claude Code
 ├── TECH-STACK.md        # Tech stack version reference (Single Source of Truth)
 └── boilerplate-guide/   # Boilerplate tech guides (19 documents)
     ├── 00-index.md      # Guide index + Tech stack summary
@@ -81,6 +82,18 @@ claude-ready-standards/
 ### Verification Section
 
 - Place a `## Verification` section at the end of each document, including commands or checklists to confirm the setup setup is complete.
+
+### Technical Guide Linting
+
+For technical guide documents (documents containing code blocks, placeholders, and/or tables), run the `/lint-doc` command before submitting changes. It checks 5 rule categories:
+
+1. **Syntax** — Code fence isolation, language identifiers, table column consistency
+2. **Semantics** — Placeholder naming consistency, examples alongside placeholders
+3. **Shell Convention** — Quote style for regex, stderr for errors, appropriate grep flags
+4. **Cross-Reference Integrity** — Examples, checklists, and verification scripts must agree
+5. **Decision Documentation** — Chosen approaches must include rationale and mention alternatives
+
+Usage: `/lint-doc <filename>`
 
 ---
 
