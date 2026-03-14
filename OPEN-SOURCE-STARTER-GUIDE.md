@@ -480,10 +480,10 @@ Run these commands to verify the bootstrapped repository:
 
 ```bash
 # Verify all essential files exist
-ls -la LICENSE CODE_OF_CONDUCT.md CONTRIBUTING.md SECURITY.md README.md CLAUDE.md .gitignore .gitattributes
+for f in LICENSE CODE_OF_CONDUCT.md CONTRIBUTING.md SECURITY.md README.md CLAUDE.md .gitignore .gitattributes; do test -f "$f" || { echo "❌ Missing essential file: $f"; exit 1; }; done
 
 # Verify GitHub templates exist
-ls -la .github/PULL_REQUEST_TEMPLATE.md .github/ISSUE_TEMPLATE/bug-report.yml .github/ISSUE_TEMPLATE/feature-request.yml
+for f in .github/PULL_REQUEST_TEMPLATE.md .github/ISSUE_TEMPLATE/bug-report.yml .github/ISSUE_TEMPLATE/feature-request.yml; do test -f "$f" || { echo "❌ Missing GitHub template: $f"; exit 1; }; done
 
 # Verify .gitignore covers essentials
 grep -E "\.env|\.DS_Store|\.claude|tasks/" .gitignore
