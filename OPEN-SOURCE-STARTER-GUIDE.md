@@ -181,7 +181,7 @@ The `CLAUDE.md` file is the most critical piece for ongoing Claude Code integrat
 >
 > **Section 3 — Git Rules:**
 > - Allowed git commands (status, diff, log, add specific files, commit, push only when requested)
-> - Prohibited git commands (git add -A, git add ., force push, hard reset)
+> - Prohibited git commands (under a `### Prohibited Actions` heading): `git add -A`, `git add .`, `git push --force`, `git reset --hard`
 > - Commit message format with examples
 > - Branch naming conventions
 >
@@ -423,7 +423,7 @@ Use this single comprehensive prompt to generate all essential files in one sess
 > 5. `CONTRIBUTING.md` — fork workflow, commit conventions, PR guidelines
 > 6. `SECURITY.md` — vulnerability reporting, disclosure policy
 > 7. `README.md` — full structure with project description, quick start placeholder, contributing link, license
-> 8. `CLAUDE.md` — project rules, repository structure, git rules, workflow guidelines, task management, core principles
+> 8. `CLAUDE.md` — project rules, repository structure, git rules (including a '### Prohibited Actions' section), workflow guidelines, task management, core principles
 > 9. `.github/ISSUE_TEMPLATE/bug-report.yml` — YAML form template
 > 10. `.github/ISSUE_TEMPLATE/feature-request.yml` — YAML form template
 > 11. `.github/PULL_REQUEST_TEMPLATE.md` — summary, related issue, changes, checklist
