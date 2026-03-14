@@ -370,7 +370,7 @@ tasks/
 
 > **Prompt to Claude Code:**
 >
-> "Create a `CHANGELOG.md` following the Keep a Changelog format (keepachangelog.com). Include an `[Unreleased]` section and one initial `[0.1.0]` entry with an `Added` subsection listing the initial project scaffolding."
+> "Create a `CHANGELOG.md` following the [Keep a Changelog format](https://keepachangelog.com/en/1.0.0/). Include an `[Unreleased]` section and one initial `[0.1.0]` entry with an `Added` subsection listing the initial project scaffolding."
 
 ### 8.2 GitHub Actions CI
 
