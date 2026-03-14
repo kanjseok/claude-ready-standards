@@ -83,6 +83,18 @@ claude-ready-standards/
 
 - Place a `## Verification` section at the end of each document, including commands or checklists to confirm the setup setup is complete.
 
+### Technical Guide Linting
+
+For technical guide documents (documents containing code blocks, placeholders, and/or tables), run the `/lint-doc` command before submitting changes. It checks 5 rule categories:
+
+1. **Syntax** — Code fence isolation, language identifiers, table column consistency
+2. **Semantics** — Placeholder naming consistency, examples alongside placeholders
+3. **Shell Convention** — Quote style for regex, stderr for errors, appropriate grep flags
+4. **Cross-Reference Integrity** — Examples, checklists, and verification scripts must agree
+5. **Decision Documentation** — Chosen approaches must include rationale and mention alternatives
+
+Usage: `/lint-doc <filename>`
+
 ---
 
 ## 3. Git Rules

@@ -461,7 +461,7 @@ After Claude Code generates the files, verify completeness:
 - [ ] All placeholder values (`{project-name}`, etc.) have been replaced
 - [ ] Commit message format in `CONTRIBUTING.md` matches `CLAUDE.md`
 - [ ] Git rules in `CLAUDE.md` prohibit `git add -A`, `git add .`, `git push --force`, and `git reset --hard`
-- [ ] `.gitignore` includes `.env`, `.env.local`, `.env.*.local`, editor patterns (`.vscode/`, `.idea/`, `*.code-workspace`), and `tasks/`
+- [ ] `.gitignore` includes `.env`, `.env.local`, `.env.*.local`, `.DS_Store`, editor patterns (`.vscode/`, `.idea/`, `*.code-workspace`), `.claude/`, and `tasks/`
 - [ ] Branch naming conventions are documented
 - [ ] Contact information is consistent across `CODE_OF_CONDUCT.md` and `SECURITY.md`
 
