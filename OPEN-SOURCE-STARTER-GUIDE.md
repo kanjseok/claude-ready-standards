@@ -488,7 +488,7 @@ for f in .github/PULL_REQUEST_TEMPLATE.md .github/ISSUE_TEMPLATE/bug-report.yml 
 
 # Verify .gitignore covers essentials
 for pattern in '\.env' '\.DS_Store' '\.claude/' 'tasks/'; do
-  grep -q "^${pattern}" .gitignore || { echo "❌ .gitignore is missing essential pattern: $pattern"; exit 1; }
+  grep -q "^${pattern}" .gitignore || { echo "❌ .gitignore is missing essential pattern: ${pattern//\\\\/}"; exit 1; }
 done
 
 # Verify .gitattributes enforces LF
