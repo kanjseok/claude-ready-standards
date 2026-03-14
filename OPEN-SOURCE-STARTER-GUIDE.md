@@ -82,7 +82,7 @@ Community health files are essential for encouraging contributions and maintaini
 
 > **Prompt to Claude Code:**
 >
-> "Create a `CODE_OF_CONDUCT.md` based on the Contributor Covenant v2.1. Include sections for: Our Pledge, Our Standards (positive and negative examples), Enforcement Responsibilities, Scope, Reporting (via GitHub Issues and maintainer contact), and Attribution. Use `{contact-method}` as the reporting contact."
+> "Create a `CODE_OF_CONDUCT.md` based on the Contributor Covenant v2.1. Include sections for: Our Pledge, Our Standards (positive and negative examples), Enforcement Responsibilities, Scope, Reporting (via GitHub Issues and maintainer contact), and Attribution. Use `{security-contact-email}` as the reporting contact."
 
 ### 3.2 Contributing Guide
 
@@ -410,7 +410,7 @@ Use this single comprehensive prompt to generate all essential files in one sess
 > - **License**: `{license-type}`
 > - **Copyright holder**: `{name-or-organization}`
 > - **Copyright year**: `{year}`
-> - **Security contact**: `{email}`
+> - **Security contact**: `{security-contact-email}`
 > - **Default commit type**: `{type}` (e.g., `feat` for software, `docs` for documentation)
 >
 > Generate the following files in order:
@@ -489,7 +489,7 @@ for f in .github/PULL_REQUEST_TEMPLATE.md .github/ISSUE_TEMPLATE/bug-report.yml 
 grep -qE "\.env|\.DS_Store|\.claude|tasks/" .gitignore || { echo "❌ .gitignore is missing essential patterns"; exit 1; }
 
 # Verify .gitattributes enforces LF
-grep -q "eol=lf" .gitattributes || { echo "❌ .gitattributes is not enforcing LF line endings"; exit 1; }
+grep -q "^\*.*eol=lf" .gitattributes || { echo "❌ .gitattributes is not enforcing LF line endings"; exit 1; }
 
 # Verify git rules in CLAUDE.md
 grep -qE "git add -A|git add \.|git push --force|git reset --hard" CLAUDE.md || { echo "❌ CLAUDE.md does not document prohibited git commands"; exit 1; }
