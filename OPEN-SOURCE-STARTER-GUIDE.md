@@ -78,6 +78,8 @@ Choose the appropriate license based on your project type:
 
 Community health files are essential for encouraging contributions and maintaining project quality.
 
+> **File Placement Note:** GitHub recognizes community health files (`CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `SECURITY.md`) in three locations: the repository root, `docs/`, or `.github/`. This guide places them in the **root directory** for maximum visibility — contributors see them immediately without navigating into subdirectories. If you prefer a cleaner root, move them to `.github/` and update the file paths in the generation prompts and verification script accordingly.
+
 ### 3.1 Code of Conduct
 
 > **Prompt to Claude Code:**
