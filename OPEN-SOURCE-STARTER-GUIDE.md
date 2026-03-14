@@ -317,6 +317,7 @@ Desktop.ini
 # Editor / IDE
 .vscode/
 .idea/
+*.code-workspace
 *.swp
 *.swo
 *~
@@ -482,7 +483,7 @@ Run these commands to verify the bootstrapped repository:
 ls -la LICENSE CODE_OF_CONDUCT.md CONTRIBUTING.md SECURITY.md README.md CLAUDE.md .gitignore .gitattributes
 
 # Verify GitHub templates exist
-ls -la .github/PULL_REQUEST_TEMPLATE.md .github/ISSUE_TEMPLATE/
+ls -la .github/PULL_REQUEST_TEMPLATE.md .github/ISSUE_TEMPLATE/bug-report.yml .github/ISSUE_TEMPLATE/feature-request.yml
 
 # Verify .gitignore covers essentials
 grep -E "\.env|\.DS_Store|\.claude|tasks/" .gitignore
