@@ -461,7 +461,7 @@ After Claude Code generates the files, verify completeness:
 - [ ] All placeholder values (`{project-name}`, etc.) have been replaced
 - [ ] Commit message format in `CONTRIBUTING.md` matches `CLAUDE.md`
 - [ ] Git rules in `CLAUDE.md` prohibit `git add -A`, `git add .`, `git push --force`, and `git reset --hard`
-- [ ] `.gitignore` includes `.env`, `.env.local`, `.env.*.local`, and `tasks/`
+- [ ] `.gitignore` includes `.env`, `.env.local`, `.env.*.local`, editor patterns (`.vscode/`, `.idea/`, `*.code-workspace`), and `tasks/`
 - [ ] Branch naming conventions are documented
 - [ ] Contact information is consistent across `CODE_OF_CONDUCT.md` and `SECURITY.md`
 
@@ -489,7 +489,7 @@ for f in LICENSE CODE_OF_CONDUCT.md CONTRIBUTING.md SECURITY.md README.md CLAUDE
 for f in .github/PULL_REQUEST_TEMPLATE.md .github/ISSUE_TEMPLATE/bug-report.yml .github/ISSUE_TEMPLATE/feature-request.yml; do test -f "$f" || { echo "❌ Missing GitHub template: $f" >&2; exit 1; }; done
 
 # Verify .gitignore covers essentials
-for pattern in '\.env' '\.env\.local' '\.env\..*\.local' '\.DS_Store' '\.claude/' 'tasks/'; do
+for pattern in '\.env' '\.env\.local' '\.env\..*\.local' '\.DS_Store' '\.vscode/' '\.idea/' '\*\.code-workspace' '\.claude/' 'tasks/'; do
   grep -qE "^\s*${pattern}" .gitignore || { echo "❌ .gitignore is missing essential pattern: ${pattern//\\/}" >&2; exit 1; }
 done
 
@@ -498,7 +498,7 @@ grep -qE '^\s*\*.*eol=lf' .gitattributes || { echo "❌ .gitattributes is not en
 
 # Verify git rules in CLAUDE.md
 for cmd in "git add -A" "git add ." "git push --force" "git reset --hard"; do
-  awk '/^### Prohibited Actions/{f=1;next} /^##+ /{f=0} f' CLAUDE.md | grep -qF "$cmd" || { echo "❌ CLAUDE.md does not list the prohibited command '$cmd' under the '### Prohibited Actions' section" >&2; exit 1; }
+  awk '/^##+/{p=0} /^### Prohibited Actions/{p=1;next} p' CLAUDE.md | grep -qF "$cmd" || { echo "❌ CLAUDE.md does not list the prohibited command '$cmd' under the '### Prohibited Actions' section" >&2; exit 1; }
 done
 
 # Verify clean git status
