@@ -498,7 +498,7 @@ grep -qE '^\s*\*.*eol=lf' .gitattributes || { echo "❌ .gitattributes is not en
 
 # Verify git rules in CLAUDE.md
 for cmd in "git add -A" "git add ." "git push --force" "git reset --hard"; do
-  awk '/^##+/{p=0} /^### Prohibited Actions/{p=1;next} p' CLAUDE.md | grep -qF "$cmd" || { echo "❌ CLAUDE.md does not list the prohibited command '$cmd' under the '### Prohibited Actions' section" >&2; exit 1; }
+  awk '/^##+/{p=0} /^### Prohibited Actions/{p=1;next} p' CLAUDE.md | sed 's/`//g' | grep -qF "$cmd" || { echo "❌ CLAUDE.md does not list the prohibited command '$cmd' under the '### Prohibited Actions' section" >&2; exit 1; }
 done
 
 # Verify clean git status
