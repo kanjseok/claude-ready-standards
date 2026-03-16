@@ -1,0 +1,52 @@
+name: Feature Request
+description: Propose a new feature, improvement, or enhancement to the standards.
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Have an idea for improving Claude Ready Standards? We'd love to hear it!
+
+  - type: input
+    id: title
+    attributes:
+      label: Feature Title
+      description: A short, descriptive title for the feature or improvement.
+      placeholder: "e.g., Add observability standard, Add API versioning guide"
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation / Problem
+      description: Why is this feature needed? What problem does it solve?
+      placeholder: "Describe the pain point or gap this feature addresses."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: How would you like this to be addressed?
+      placeholder: "Describe the approach, structure, or content you envision."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: Have you considered any alternative approaches?
+      placeholder: "Describe any alternatives and why they were not chosen."
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional Context
+      description: Any other context, screenshots, or references that would help.
+    validations:
+      required: false

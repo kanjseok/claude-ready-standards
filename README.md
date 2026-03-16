@@ -1,5 +1,7 @@
 # Claude Ready Standards
 
+한국어 문서가 필요하신가요? [한국어로 읽기](README.ko.md).
+
 > Pre-built technical standards optimized for Claude Code.
 > Skip the tech stack decisions — start building immediately after your PRD is ready.
 
@@ -58,6 +60,7 @@ If you use other AI coding tools:
 | [`TECH-STACK.md`](./TECH-STACK.md)                                 | Baseline for tech stack versions (Single Source of Truth) |
 | [`CLAUDE.md`](./CLAUDE.md)                                         | Rules for working with Claude Code within this repository |
 | [`OPEN-SOURCE-STARTER-GUIDE.md`](./OPEN-SOURCE-STARTER-GUIDE.md)    | Guide to bootstrap new OSS projects with Claude Code      |
+| [`SECURITY.md`](./SECURITY.md)                                      | Security policy and vulnerability reporting                |
 | [`boilerplate-guide/00-index.md`](./boilerplate-guide/00-index.md) | Index for the Boilerplate Guide                           |
 
 ---
@@ -78,7 +81,7 @@ All documents in this repository adhere to the following principles:
 
 We welcome contributions! Please read our [Contributing Guide](CONTRIBUTING.md) before submitting a PR.
 
-This project follows the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md).
+This project follows the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md). For reporting security concerns, see our [Security Policy](SECURITY.md).
 
 ---
 

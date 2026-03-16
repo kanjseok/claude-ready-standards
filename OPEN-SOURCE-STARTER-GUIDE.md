@@ -78,7 +78,7 @@ Choose the appropriate license based on your project type:
 
 Community health files are essential for encouraging contributions and maintaining project quality.
 
-> **File Placement Note:** GitHub recognizes community health files (`CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `SECURITY.md`) in three locations: the repository root, `docs/`, or `.github/`. This guide places them in the **root directory** for maximum visibility — contributors see them immediately without navigating into subdirectories. If you prefer a cleaner root, move them to `.github/` or `docs/` by updating the file paths in the generation prompts (Section 3) and the verification script (Section 10).
+> **File Placement Note:** GitHub recognizes community health files (`CODE_OF_CONDUCT.md`, `CONTRIBUTING.md`, `SECURITY.md`) in three locations: the repository root, `docs/`, or `.github/`. This guide places them in the **root directory** for maximum visibility — contributors see them immediately without navigating into subdirectories. If you prefer a cleaner root, move them to `.github/` or `docs/` by updating the file paths in the generation prompts (Section 3) and the verification script (Section 12).
 
 ### 3.1 Code of Conduct
 
@@ -399,7 +399,456 @@ tasks/
 
 ---
 
-## 9. Full Bootstrap Prompt
+## 9. Dual AI Reviewer Setup
+
+> A step-by-step technical guide to configuring Claude and Gemini as complementary PR reviewers on GitHub, with CODEOWNERS-based human approval as a mandatory merge gate.
+
+### 9.1 Overview
+
+#### The Problem
+
+Open source repositories need consistent, thorough code review. AI-powered reviewers can provide instant feedback on every PR, but relying on a single bot creates a single point of failure and a narrow review perspective. More critically, AI reviews alone should never be sufficient to merge code into the main branch.
+
+#### The Solution
+
+This section establishes a **dual AI reviewer architecture** where:
+
+- **Gemini Code Assist** provides inline code quality feedback and suggestions
+- **Claude Code Review** performs structural review and submits formal APPROVE or REQUEST_CHANGES verdicts
+- **CODEOWNERS** enforces mandatory human approval as the final merge gate
+
+```text
+PR Created
+  |
+  +-- Gemini Code Assist --> Inline comments, suggestions
+  |
+  +-- Claude Code Review --> APPROVE / REQUEST_CHANGES
+  |
+  +-- Code Owner (human) --> Final APPROVE required
+  |
+  v
+Merge Allowed
+```
+
+#### Prerequisites
+
+- GitHub repository with admin access
+- GitHub Actions enabled
+- [Gemini Code Assist](https://github.com/apps/gemini-code-assist) GitHub App installed
+- [Claude Code](https://github.com/apps/claude-code) GitHub App installed (or OAuth token configured)
+
+### 9.2 Architecture
+
+#### Role Separation
+
+| Reviewer | Type | Permission | Role |
+|----------|------|------------|------|
+| Gemini Code Assist | GitHub App (reviewer) | Automatic | Inline feedback, code suggestions, summary |
+| Claude Code Review | GitHub Actions workflow | `pull-requests: write` | Formal review verdict (APPROVE / REQUEST_CHANGES) |
+| Claude Code (mention) | GitHub Actions workflow | `pull-requests: write` | On-demand assistance via `@claude` |
+| Code Owner (human) | CODEOWNERS | Required approval | Final merge authorization |
+
+#### Why Two AI Reviewers?
+
+Each reviewer brings different strengths:
+
+- **Gemini** excels at granular code suggestions, style consistency checks, and inline comment-level feedback
+- **Claude** excels at holistic review, architectural assessment, and formal approval decisions
+- **Together** they cover both micro (line-level) and macro (design-level) review dimensions
+
+#### Safety Model
+
+```text
+AI Reviewers (Claude + Gemini)
+  = Advisory + Formal Check
+
+Code Owner (human)
+  = Mandatory Gate (cannot be bypassed by bots)
+```
+
+Even if both AI reviewers approve, the PR cannot merge without the code owner's explicit approval. This prevents automated merges of potentially harmful contributions.
+
+### 9.3 Step-by-Step Setup
+
+#### 9.3.1 Install Gemini Code Assist
+
+1. Navigate to [github.com/apps/gemini-code-assist](https://github.com/apps/gemini-code-assist)
+2. Click **Install** and select your repository
+3. Gemini automatically activates as a PR reviewer upon installation
+
+Gemini requires no workflow file. It operates as a GitHub App with native reviewer capabilities and will automatically:
+
+- Post a summary comment on new PRs
+- Leave inline code review comments
+- Respond to `/gemini` commands in PR comments
+
+#### 9.3.2 Configure Claude Code Action
+
+Claude operates through GitHub Actions. Two workflows are needed:
+
+##### Workflow 1: Automatic PR Review
+
+Create `.github/workflows/claude-code-review.yml`:
+
+```yaml
+name: Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review, reopened]
+
+jobs:
+  claude-review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write  # CRITICAL: enables APPROVE/REQUEST_CHANGES
+      issues: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Code Review
+        id: claude-review
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          plugin_marketplaces: 'https://github.com/anthropics/claude-code.git'
+          plugins: 'code-review@claude-code-plugins'
+          prompt: >-
+            /code-review:code-review
+            ${{ github.repository }}/pull/${{ github.event.pull_request.number }}
+```
+
+**Key configuration: `pull-requests: write`**
+
+The default template from Claude's GitHub integration sets `pull-requests: read`. This allows Claude to read PR content and post check results, but it **cannot** submit review verdicts (APPROVE or REQUEST_CHANGES). Changing this to `write` is the single most important configuration in this guide.
+
+| Permission | Claude Can Do |
+|------------|---------------|
+| `pull-requests: read` | Read PR diff, post check pass/fail |
+| `pull-requests: write` | All of the above + submit APPROVE / REQUEST_CHANGES reviews |
+
+##### Workflow 2: On-Demand Assistance (`@claude`)
+
+Create `.github/workflows/claude.yml`:
+
+```yaml
+name: Claude Code
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  claude:
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write   # Enables review actions
+      issues: write          # Enables issue comment responses
+      id-token: write
+      actions: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Code
+        id: claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          additional_permissions: |
+            actions: read
+```
+
+##### Store the OAuth Token
+
+1. Go to **Settings > Secrets and variables > Actions** in your repository
+2. Click **New repository secret**
+3. Name: `CLAUDE_CODE_OAUTH_TOKEN`
+4. Value: your Claude Code OAuth token (obtain from [Claude Code dashboard](https://console.anthropic.com/))
+
+#### 9.3.3 Add CODEOWNERS
+
+Create `.github/CODEOWNERS`:
+
+```text
+# Default code owner for all files
+# Owner approval is always required regardless of bot reviews
+* @your-github-username
+```
+
+Replace `@your-github-username` with the repository owner or maintainer team.
+
+For repositories with multiple maintainers or domain-specific ownership:
+
+```text
+# Default owner
+* @org/core-team
+
+# Domain-specific owners
+docs/           @org/docs-team
+src/api/        @org/backend-team
+src/components/ @org/frontend-team
+.github/        @org/devops-team
+```
+
+#### 9.3.4 Configure Repository Ruleset
+
+Go to **Settings > Rules > Rulesets** and create a new ruleset:
+
+| Setting | Value | Reason |
+|---------|-------|--------|
+| Name | Main Branch Protection | Descriptive identifier |
+| Enforcement | Active | Rules are enforced |
+| Target | Default branch | Protects `main` |
+| Restrict deletions | Enabled | Prevent branch deletion |
+| Block force pushes | Enabled | Prevent history rewrite |
+| Require pull request | Enabled | All changes via PR |
+| Required approvals | 1 (minimum) | At least one approval needed |
+| Require code owner review | **Enabled** | Human approval mandatory |
+| Dismiss stale reviews | Optional | Re-review after new pushes |
+| Require review thread resolution | Optional | Force addressing comments |
+
+**Critical setting: `Require code owner review = true`**
+
+This ensures that even if Claude submits an APPROVE, the PR remains blocked until the code owner (human) also approves. This is the safety mechanism that prevents fully automated merges.
+
+##### Bypass Actors
+
+Configure bypass actors for legitimate administrative needs:
+
+- **Repository Admin** — can merge in emergencies (initial setup, CI fixes)
+- **Maintain role** — same as admin for maintenance tasks
+
+Bypass should be used sparingly and only for:
+
+- Initial repository setup (bootstrapping PRs before reviewers are configured)
+- CI/CD pipeline fixes that are blocked by circular dependencies
+- Emergency hotfixes with post-merge review
+
+### 9.4 How It Works in Practice
+
+#### Normal PR Flow
+
+```text
+1. Contributor opens PR
+   |
+2. Gemini Code Assist (automatic)
+   +-- Posts summary comment
+   +-- Leaves inline code suggestions
+   +-- State: COMMENTED (no formal verdict)
+   |
+3. Claude Code Review (automatic)
+   +-- Analyzes full PR diff
+   +-- Posts review with APPROVE or REQUEST_CHANGES
+   +-- State: APPROVED or CHANGES_REQUESTED
+   |
+4. Contributor addresses feedback (if any)
+   +-- Pushes fixes
+   +-- Claude re-reviews on synchronize event
+   |
+5. Code Owner reviews
+   +-- Reads AI feedback as input
+   +-- Performs final human judgment
+   +-- Submits APPROVE
+   |
+6. PR merges
+```
+
+#### Addressing AI Review Feedback
+
+When Claude or Gemini leaves feedback:
+
+1. **Fix the code** — push new commits to the branch
+2. **Reply to the comment** — explain what was fixed and reference the commit
+3. **Mark as resolved** — if review thread resolution is required
+
+Example reply format:
+
+```text
+Fixed in abc1234 — updated placeholder to `[e.g., ...]` format.
+```
+
+#### On-Demand Claude Assistance
+
+In any PR comment or issue, mention `@claude` to get help:
+
+```text
+@claude Can you review the error handling in this function?
+@claude Suggest a more efficient algorithm for this sorting logic.
+@claude What security concerns exist in this authentication flow?
+```
+
+### 9.5 Troubleshooting
+
+#### Claude Review Shows as Check Pass/Fail Instead of Review
+
+**Cause**: `pull-requests: read` permission in the workflow file.
+
+**Fix**: Change to `pull-requests: write` in `.github/workflows/claude-code-review.yml`.
+
+Note that `pull_request` event workflows use the workflow definition from the **merge base (main branch)**, not from the PR branch. This means permission changes only take effect after the PR containing those changes is merged into main.
+
+#### PR is BLOCKED Despite AI Approval
+
+**Cause**: `require_code_owner_review: true` in the ruleset. This is expected behavior.
+
+**Fix**: The code owner (human) must approve. This is the intended safety mechanism.
+
+#### Gemini Does Not Submit APPROVE
+
+**Expected behavior**: Gemini Code Assist operates as a commenting reviewer. It provides inline suggestions and summaries but does not submit formal APPROVE or REQUEST_CHANGES verdicts. Claude fills this role.
+
+#### Workflow Not Triggering on New Push
+
+**Cause**: GitHub Actions `pull_request` event reads workflow definitions from the merge base branch, not the PR branch.
+
+**Fix**: Workflow file changes must be merged to main before they take effect on subsequent PRs. For the initial setup PR, use admin bypass to merge.
+
+#### `CLAUDE_CODE_OAUTH_TOKEN` Not Working
+
+**Checklist**:
+
+1. Verify the secret is set in **Settings > Secrets and variables > Actions**
+2. Confirm the secret name matches exactly: `CLAUDE_CODE_OAUTH_TOKEN`
+3. Check that the token has not expired
+4. Verify the Claude Code GitHub App is installed on the repository
+
+### 9.6 Security Considerations
+
+#### Token Management
+
+- Store `CLAUDE_CODE_OAUTH_TOKEN` as a repository secret, never in code
+- Rotate tokens periodically according to your organization's security policy
+- Use environment-scoped secrets for organizations with multiple environments
+
+#### Permission Minimization
+
+The workflows use the minimum permissions required:
+
+| Permission | Scope | Justification |
+|------------|-------|---------------|
+| `contents: read` | Both workflows | Read repository code for review |
+| `pull-requests: write` | Both workflows | Submit review verdicts |
+| `issues: write` | `claude.yml` only | Respond to `@claude` mentions in issues |
+| `id-token: write` | Both workflows | OIDC authentication for Claude |
+| `actions: read` | `claude.yml` only | Read CI results for context |
+
+#### Fork PR Considerations
+
+For open source repositories accepting contributions from forks:
+
+- GitHub Actions workflows triggered by `pull_request` from forks run with **read-only** permissions by default
+- The `CLAUDE_CODE_OAUTH_TOKEN` secret is **not available** to fork PRs
+- Consider using `pull_request_target` with caution if you need AI reviews on fork PRs
+- Always require code owner approval as the final gate regardless of CI status
+
+### 9.7 Customization Options
+
+#### Limiting Claude Review Scope
+
+To review only specific file types:
+
+```yaml
+on:
+  pull_request:
+    types: [opened, synchronize, ready_for_review, reopened]
+    paths:
+      - "src/**/*.ts"
+      - "src/**/*.tsx"
+      - "*.md"
+```
+
+#### Filtering by Contributor Type
+
+To run Claude review only for external contributors:
+
+```yaml
+jobs:
+  claude-review:
+    if: |
+      github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR' ||
+      github.event.pull_request.author_association == 'NONE'
+```
+
+#### Adding Gemini Customization
+
+Create `.gemini/` directory in the repository root with configuration files:
+
+```text
+.gemini/
+  config.yaml       # Review behavior settings
+  style-guide.md    # Custom code review style guide
+```
+
+See [Gemini Code Assist documentation](https://developers.google.com/gemini-code-assist/docs/customize-gemini-behavior-github) for configuration options.
+
+### 9.8 Quick Start Checklist
+
+Use this checklist when setting up a new repository:
+
+```markdown
+[ ] Install Gemini Code Assist GitHub App
+[ ] Install Claude Code GitHub App (or configure OAuth token)
+[ ] Store CLAUDE_CODE_OAUTH_TOKEN as repository secret
+[ ] Create .github/workflows/claude-code-review.yml (pull-requests: write)
+[ ] Create .github/workflows/claude.yml (pull-requests: write, issues: write)
+[ ] Create .github/CODEOWNERS with repository owner(s)
+[ ] Create repository ruleset:
+    [ ] Require pull request before merging
+    [ ] Required approvals: 1+
+    [ ] Require code owner review: enabled
+    [ ] Restrict deletions: enabled
+    [ ] Block force pushes: enabled
+[ ] Verify setup with a test PR:
+    [ ] Gemini posts summary and inline comments
+    [ ] Claude submits APPROVE or REQUEST_CHANGES
+    [ ] PR remains BLOCKED until code owner approves
+    [ ] PR merges after code owner approval
+```
+
+### 9.9 Reference
+
+#### File Structure
+
+```text
+.github/
+  CODEOWNERS                              # Human approval gate
+  workflows/
+    claude-code-review.yml                # Auto review on PR events
+    claude.yml                            # @claude mention handler
+```
+
+#### Related Documentation
+
+- [Claude Code Action](https://github.com/anthropics/claude-code-action) — GitHub Actions integration
+- [Claude Code Plugins](https://github.com/anthropics/claude-code/tree/main/plugins) — Review plugins
+- [Gemini Code Assist](https://developers.google.com/gemini-code-assist/docs/review-github-code) — Setup and customization
+- [GitHub Rulesets](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-rulesets) — Branch protection configuration
+- [CODEOWNERS Syntax](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners) — Ownership patterns
+
+---
+
+## 10. Full Bootstrap Prompt
 
 Use this single comprehensive prompt to generate all essential files in one session:
 
@@ -430,6 +879,12 @@ Use this single comprehensive prompt to generate all essential files in one sess
 > 10. `.github/ISSUE_TEMPLATE/feature-request.yml` — YAML form template
 > 11. `.github/PULL_REQUEST_TEMPLATE.md` — summary, related issue, changes, checklist
 >
+> **Optional — Dual AI Reviewer Setup (see Section 9):**
+>
+> 12. `.github/workflows/claude-code-review.yml` — automatic PR review workflow (`pull-requests: write`)
+> 13. `.github/workflows/claude.yml` — on-demand `@claude` mention handler (`pull-requests: write`, `issues: write`)
+> 14. `.github/CODEOWNERS` — human approval gate with repository owner(s)
+>
 > After generating all files, run `git add` for each file individually and commit with the message:
 > `{type}(repo): initialize open source project structure`
 >
@@ -437,7 +892,7 @@ Use this single comprehensive prompt to generate all essential files in one sess
 
 ---
 
-## 10. Post-Bootstrap Checklist
+## 11. Post-Bootstrap Checklist
 
 After Claude Code generates the files, verify completeness:
 
@@ -454,6 +909,15 @@ After Claude Code generates the files, verify completeness:
 - [ ] `.github/ISSUE_TEMPLATE/bug-report.yml` is valid YAML
 - [ ] `.github/ISSUE_TEMPLATE/feature-request.yml` is valid YAML
 - [ ] `.github/PULL_REQUEST_TEMPLATE.md` has checklist
+
+### Dual AI Reviewer Files (Optional — Section 9)
+
+- [ ] `.github/workflows/claude-code-review.yml` exists with `pull-requests: write` permission
+- [ ] `.github/workflows/claude.yml` exists with `pull-requests: write` and `issues: write` permissions
+- [ ] `.github/CODEOWNERS` exists with repository owner(s)
+- [ ] `CLAUDE_CODE_OAUTH_TOKEN` is stored as a repository secret
+- [ ] Gemini Code Assist GitHub App is installed on the repository
+- [ ] Claude Code GitHub App is installed (or OAuth token configured)
 
 ### Content Quality
 
@@ -475,9 +939,15 @@ After pushing to GitHub, configure these settings in the repository:
 - [ ] **Security**: Enable Dependabot alerts and security advisories
 - [ ] **Pages** (optional): Enable GitHub Pages for documentation
 
+### Dual AI Reviewer Repository Settings (Optional — Section 9)
+
+- [ ] **Rules > Rulesets**: Create ruleset with require pull request, required approvals (1+), require code owner review enabled, restrict deletions, block force pushes
+- [ ] **Bypass Actors**: Configure repository admin and maintain role for emergency merges
+- [ ] Verify with a test PR: Gemini posts summary/inline comments, Claude submits APPROVE or REQUEST_CHANGES, PR remains BLOCKED until code owner approves, PR merges after code owner approval
+
 ---
 
-## Verification
+## 12. Verification
 
 Run these commands to verify the bootstrapped repository:
 
@@ -508,6 +978,26 @@ for cmd in "git add -A" "git add ." "git push --force" "git reset --hard"; do
   awk '/^##+/{p=0} /^### Prohibited Actions/{p=1;next} p' CLAUDE.md | sed 's/`//g' | grep -qF "$cmd" || { echo "❌ CLAUDE.md does not list the prohibited command '$cmd' under the '### Prohibited Actions' section" >&2; exit 1; }
 done
 
+# Verify dual AI reviewer files (optional — Section 9)
+for f in .github/workflows/claude-code-review.yml .github/workflows/claude.yml .github/CODEOWNERS; do
+  if test -f "$f"; then
+    echo "✅ Dual AI reviewer file exists: $f"
+  else
+    echo "ℹ️  Optional dual AI reviewer file not found: $f (see Section 9 to set up)"
+  fi
+done
+
+# Verify claude-code-review.yml has pull-requests: write (if file exists)
+if test -f .github/workflows/claude-code-review.yml; then
+  grep -qE 'pull-requests:\s*write' .github/workflows/claude-code-review.yml || { echo "⚠️  .github/workflows/claude-code-review.yml should have 'pull-requests: write' permission" >&2; }
+fi
+
+# Verify claude.yml has pull-requests: write and issues: write (if file exists)
+if test -f .github/workflows/claude.yml; then
+  grep -qE 'pull-requests:\s*write' .github/workflows/claude.yml || { echo "⚠️  .github/workflows/claude.yml should have 'pull-requests: write' permission" >&2; }
+  grep -qE 'issues:\s*write' .github/workflows/claude.yml || { echo "⚠️  .github/workflows/claude.yml should have 'issues: write' permission" >&2; }
+fi
+
 # Verify clean git status
 git status
 
@@ -520,3 +1010,5 @@ git log --oneline -1
 - [ ] `.gitattributes` enforces LF line endings
 - [ ] `CLAUDE.md` contains git safety rules
 - [ ] Initial commit is clean with no untracked files
+- [ ] (Optional) Dual AI reviewer workflow files have correct permissions
+- [ ] (Optional) CODEOWNERS file specifies repository owner(s)

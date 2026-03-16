@@ -15,6 +15,11 @@ ehthumbs.db
 # AI tools
 .claude/
 
+# Environment files (NEVER commit secrets)
+.env
+.env.local
+.env.*.local
+
 # Temporary files
 *.tmp
 *.bak

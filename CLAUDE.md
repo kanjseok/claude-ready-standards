@@ -20,15 +20,21 @@
 ```
 claude-ready-standards/
 ├── .github/
+│   ├── CODEOWNERS               # Human approval gate for PR merges
 │   ├── ISSUE_TEMPLATE/
 │   │   ├── bug-report.yml       # Bug report issue template
-│   │   └── document-request.yml # New document request template
-│   └── PULL_REQUEST_TEMPLATE.md # PR checklist template
-├── .gitignore           # Exclude OS/Editor files
+│   │   ├── document-request.yml # New document request template
+│   │   └── feature-request.yml  # Feature/enhancement request template
+│   ├── PULL_REQUEST_TEMPLATE.md # PR checklist template
+│   └── workflows/
+│       ├── claude-code-review.yml # Automatic PR review by Claude
+│       └── claude.yml             # On-demand @claude mention handler
+├── .gitignore           # Exclude OS/Editor/Env files
 ├── .gitattributes       # Newline consistency + Markdown diff config
 ├── LICENSE              # CC BY 4.0 license
 ├── CODE_OF_CONDUCT.md   # Community code of conduct
 ├── CONTRIBUTING.md      # Contribution guidelines
+├── SECURITY.md          # Security policy and vulnerability reporting
 ├── README.md            # Repository entry point — Overview, catalog, writing principles
 ├── CLAUDE.md            # This file — Repository-specific Claude Code rules
 ├── OPEN-SOURCE-STARTER-GUIDE.md  # Guide to bootstrap new open source projects with Claude Code
